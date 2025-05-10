@@ -8,7 +8,7 @@ import altair as alt
 st.set_page_config(page_title="Citi Bike Dashboard", layout="wide")
 
 # --- Title and Info ---
-st.markdown("# 🚲 NYC Citi Bike Trip Viewer")
+st.markdown("# 🚲 NYC Citi Bike Data Analysis and Prediction")
 st.markdown("A dynamic dashboard to explore NYC Citi Bike trip data.")
 st.markdown("---")
 
@@ -70,6 +70,14 @@ try:
         df["start_station_name"].isin(stations)
     ]
 
+    # --- Insight Summary ---
+    total_trips = len(filtered_df)
+    top_station = filtered_df["start_station_name"].value_counts().idxmax() if not filtered_df.empty else "N/A"
+    st.markdown(
+        f"📊 Based on your selection, a total of **{total_trips:,} trips** were recorded. "
+        f"The most frequent start station was **{top_station}**."
+    )
+
     # --- Visualization 1: Trips by Hour ---
     st.subheader("⏱ Trips by Hour of Day")
     hour_chart = filtered_df.groupby("hour").size().reset_index(name="count")
@@ -92,21 +100,16 @@ try:
     ).properties(height=300)
     st.altair_chart(heatmap, use_container_width=True)
 
-    # --- Enhancement 1: Map View of Start Stations ---
+    # --- Enhancement: Map View of Start Stations ---
     st.subheader("🗺️ Map of Start Locations")
     if "start_lat" in filtered_df.columns and "start_lng" in filtered_df.columns:
         st.map(filtered_df.rename(columns={"start_lat": "lat", "start_lng": "lon"}))
     else:
         st.info("ℹ️ Location data (latitude/longitude) not available in this dataset.")
 
-    # --- Enhancement 2: Download CSV ---
+    # --- Enhancement: Download CSV ---
     st.subheader("📥 Export Filtered Data")
     st.download_button("Download CSV", filtered_df.to_csv(index=False), file_name="filtered_citibike_data.csv", mime="text/csv")
-
-    # --- Enhancement 3: Trip Duration Histogram ---
-    if "tripduration" in filtered_df.columns:
-        st.subheader("⏱ Trip Duration Distribution (seconds)")
-        st.bar_chart(filtered_df["tripduration"].clip(upper=3600))  # Clip extreme outliers
 
     # --- Optional Raw Data ---
     with st.expander("🔽 Show Raw Data"):
