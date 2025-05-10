@@ -78,6 +78,24 @@ try:
         f"The most frequent start station was **{top_station}**."
     )
 
+    # --- Metrics Section ---
+    st.subheader("📊 Summary Metrics")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric("Total Trips", f"{total_trips:,}")
+
+    with col2:
+        if not filtered_df.empty:
+            peak_hour = filtered_df["hour"].value_counts().idxmax()
+            st.metric("Most Frequent Hour", f"{peak_hour}:00")
+        else:
+            st.metric("Most Frequent Hour", "N/A")
+
+    with col3:
+        st.metric("Top Start Station", top_station if top_station != "N/A" else "N/A")
+
+
     # --- Visualization 1: Trips by Hour ---
     st.subheader("⏱ Trips by Hour of Day")
     hour_chart = filtered_df.groupby("hour").size().reset_index(name="count")
