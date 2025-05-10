@@ -42,19 +42,27 @@ try:
     df["hour"] = df[datetime_col].dt.hour
     df["day"] = df[datetime_col].dt.day_name()
 
-    # --- Sidebar Filters in Expander ---
+    # --- Sidebar Filters ---
     with st.sidebar.expander("🔍 Advanced Filters", expanded=False):
-        ride_types = st.multiselect(
-            "Rideable Type", 
-            options=df["rideable_type"].dropna().unique(), 
-            default=list(df["rideable_type"].dropna().unique())
-        )
+        enable_ride_filter = st.checkbox("Filter by Rideable Type", value=False)
+        if enable_ride_filter:
+            ride_types = st.multiselect(
+                "Select Ride Types", 
+                options=df["rideable_type"].dropna().unique(),
+                default=list(df["rideable_type"].dropna().unique())
+            )
+        else:
+            ride_types = list(df["rideable_type"].dropna().unique())
 
-        stations = st.multiselect(
-            "Start Station", 
-            options=sorted(df["start_station_name"].dropna().unique()), 
-            default=list(df["start_station_name"].dropna().unique())
-        )
+        enable_station_filter = st.checkbox("Filter by Start Station", value=False)
+        if enable_station_filter:
+            stations = st.multiselect(
+                "Select Start Stations", 
+                options=sorted(df["start_station_name"].dropna().unique()),
+                default=sorted(df["start_station_name"].dropna().unique())
+            )
+        else:
+            stations = list(df["start_station_name"].dropna().unique())
 
     # --- Apply Filters ---
     filtered_df = df[
