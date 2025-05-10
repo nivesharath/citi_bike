@@ -92,6 +92,22 @@ try:
     ).properties(height=300)
     st.altair_chart(heatmap, use_container_width=True)
 
+    # --- Enhancement 1: Map View of Start Stations ---
+    st.subheader("🗺️ Map of Start Locations")
+    if "start_lat" in filtered_df.columns and "start_lng" in filtered_df.columns:
+        st.map(filtered_df.rename(columns={"start_lat": "lat", "start_lng": "lon"}))
+    else:
+        st.info("ℹ️ Location data (latitude/longitude) not available in this dataset.")
+
+    # --- Enhancement 2: Download CSV ---
+    st.subheader("📥 Export Filtered Data")
+    st.download_button("Download CSV", filtered_df.to_csv(index=False), file_name="filtered_citibike_data.csv", mime="text/csv")
+
+    # --- Enhancement 3: Trip Duration Histogram ---
+    if "tripduration" in filtered_df.columns:
+        st.subheader("⏱ Trip Duration Distribution (seconds)")
+        st.bar_chart(filtered_df["tripduration"].clip(upper=3600))  # Clip extreme outliers
+
     # --- Optional Raw Data ---
     with st.expander("🔽 Show Raw Data"):
         st.dataframe(filtered_df.head(100))
