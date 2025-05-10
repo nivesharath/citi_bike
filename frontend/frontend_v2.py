@@ -3,21 +3,27 @@ import pandas as pd
 import zipfile
 import io
 import requests
+import altair as alt
 
-st.set_page_config(layout="wide")
-st.title("🚲 NYC Citi Bike Trip Viewer")
+st.set_page_config(page_title="Citi Bike Dashboard", layout="wide")
 
-# --- User Input ---
-st.sidebar.header("Select a dataset")
-year = st.sidebar.selectbox("Year", [2023])
-month = st.sidebar.selectbox("Month", list(range(1, 13)))
+# --- Title and Info ---
+st.markdown("# 🚲 NYC Citi Bike Trip Viewer")
+st.markdown("A dynamic dashboard to explore NYC Citi Bike trip data.")
+st.markdown("---")
 
-# --- File URL ---
+# --- Sidebar for Inputs ---
+with st.sidebar:
+    st.header("📂 Select a Dataset")
+    year = st.selectbox("Year", [2023])
+    month = st.selectbox("Month", list(range(1, 13)))
+    
+# --- Load Data ---
 url = f"https://s3.amazonaws.com/tripdata/JC-{year}{month:02}-citibike-tripdata.csv.zip"
-st.write(f"🔗 Fetching data from: {url}")
+st.markdown(f"🔗 **Data Source**: [{url}]({url})")
 
 @st.cache_data
-def load_data_from_s3(zip_url):
+def load_data(zip_url):
     r = requests.get(zip_url)
     z = zipfile.ZipFile(io.BytesIO(r.content))
     csv_filename = z.namelist()[0]
@@ -25,31 +31,50 @@ def load_data_from_s3(zip_url):
         df = pd.read_csv(f)
     return df
 
-# --- Load and process ---
 try:
-    df = load_data_from_s3(url)
+    df = load_data(url)
     st.success("✅ Data loaded successfully!")
 
-    # Show raw data
-    st.subheader("📄 Sample Data")
-    st.write(df.head())
-
-    # Try to parse datetime column
+    # --- Datetime Handling ---
     datetime_col = "started_at" if "started_at" in df.columns else "starttime"
     df[datetime_col] = pd.to_datetime(df[datetime_col], errors="coerce")
-    df = df.dropna(subset=[datetime_col])
+    df.dropna(subset=[datetime_col], inplace=True)
     df["hour"] = df[datetime_col].dt.hour
+    df["day"] = df[datetime_col].dt.day_name()
 
-    # Show trip counts by hour
+    # --- Filters ---
+    with st.sidebar:
+        st.subheader("🔍 Filter Data")
+        ride_types = st.multiselect("Rideable Type", options=df["rideable_type"].unique(), default=list(df["rideable_type"].unique()))
+        stations = st.multiselect("Start Station", options=df["start_station_name"].dropna().unique(), default=list(df["start_station_name"].dropna().unique()))
+
+    filtered_df = df[df["rideable_type"].isin(ride_types) & df["start_station_name"].isin(stations)]
+
+    # --- Visualization 1: Trips by Hour ---
     st.subheader("⏱ Trips by Hour of Day")
-    hourly_counts = df.groupby("hour").size()
-    st.line_chart(hourly_counts)
+    hour_chart = filtered_df.groupby("hour").size().reset_index(name="count")
+    st.line_chart(hour_chart.set_index("hour"))
 
-    # Optional stats
-    duration_col = "tripduration" if "tripduration" in df.columns else None
-    if duration_col:
-        st.subheader("🕒 Trip Duration Stats (seconds)")
-        st.write(df[duration_col].describe())
+    # --- Visualization 2: Popular Start Stations ---
+    st.subheader("🏆 Top 10 Start Stations")
+    top_stations = filtered_df["start_station_name"].value_counts().head(10).reset_index()
+    top_stations.columns = ["Station", "Trip Count"]
+    st.bar_chart(top_stations.set_index("Station"))
+
+    # --- Visualization 3: Heatmap (Day vs Hour) ---
+    st.subheader("🔥 Trip Frequency Heatmap (Day vs Hour)")
+    heatmap_data = filtered_df.groupby(["day", "hour"]).size().reset_index(name="count")
+    heatmap = alt.Chart(heatmap_data).mark_rect().encode(
+        x=alt.X("hour:O", title="Hour of Day"),
+        y=alt.Y("day:O", sort=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
+        color=alt.Color("count:Q", scale=alt.Scale(scheme='reds')),
+        tooltip=["day", "hour", "count"]
+    ).properties(height=300)
+    st.altair_chart(heatmap, use_container_width=True)
+
+    # --- Optional Raw Data ---
+    with st.expander("🔽 Show Raw Data"):
+        st.dataframe(filtered_df.head(100))
 
 except Exception as e:
-    st.error(f"❌ Could not load data: {e}")
+    st.error(f"❌ Error loading data: {e}")
