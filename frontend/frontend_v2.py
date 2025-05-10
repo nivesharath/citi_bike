@@ -12,12 +12,12 @@ st.markdown("# 🚲 NYC Citi Bike Trip Viewer")
 st.markdown("A dynamic dashboard to explore NYC Citi Bike trip data.")
 st.markdown("---")
 
-# --- Sidebar for Inputs ---
+# --- Sidebar Inputs ---
 with st.sidebar:
     st.header("📂 Select a Dataset")
     year = st.selectbox("Year", [2023])
     month = st.selectbox("Month", list(range(1, 13)))
-    
+
 # --- Load Data ---
 url = f"https://s3.amazonaws.com/tripdata/JC-{year}{month:02}-citibike-tripdata.csv.zip"
 st.markdown(f"🔗 **Data Source**: [{url}]({url})")
@@ -42,20 +42,32 @@ try:
     df["hour"] = df[datetime_col].dt.hour
     df["day"] = df[datetime_col].dt.day_name()
 
-    # --- Filters ---
-    with st.sidebar:
-        st.subheader("🔍 Filter Data")
-        ride_types = st.multiselect("Rideable Type", options=df["rideable_type"].unique(), default=list(df["rideable_type"].unique()))
-        stations = st.multiselect("Start Station", options=df["start_station_name"].dropna().unique(), default=list(df["start_station_name"].dropna().unique()))
+    # --- Sidebar Filters in Expander ---
+    with st.sidebar.expander("🔍 Advanced Filters", expanded=False):
+        ride_types = st.multiselect(
+            "Rideable Type", 
+            options=df["rideable_type"].dropna().unique(), 
+            default=list(df["rideable_type"].dropna().unique())
+        )
 
-    filtered_df = df[df["rideable_type"].isin(ride_types) & df["start_station_name"].isin(stations)]
+        stations = st.multiselect(
+            "Start Station", 
+            options=sorted(df["start_station_name"].dropna().unique()), 
+            default=list(df["start_station_name"].dropna().unique())
+        )
+
+    # --- Apply Filters ---
+    filtered_df = df[
+        df["rideable_type"].isin(ride_types) & 
+        df["start_station_name"].isin(stations)
+    ]
 
     # --- Visualization 1: Trips by Hour ---
     st.subheader("⏱ Trips by Hour of Day")
     hour_chart = filtered_df.groupby("hour").size().reset_index(name="count")
     st.line_chart(hour_chart.set_index("hour"))
 
-    # --- Visualization 2: Popular Start Stations ---
+    # --- Visualization 2: Top Start Stations ---
     st.subheader("🏆 Top 10 Start Stations")
     top_stations = filtered_df["start_station_name"].value_counts().head(10).reset_index()
     top_stations.columns = ["Station", "Trip Count"]
