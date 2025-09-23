@@ -52,6 +52,7 @@ streamlit run frontend/app.py
 **Results**
 
 1.Forecasted hourly demand trends with MAE < X rides/hour (update with your best metric).
+
 2.Visualized predicted vs. actual rides for better demand planning.
 
 - Trained models achieved consistent forecasting accuracy with MAE in the ~5–7 rides/hour range.  
@@ -62,4 +63,5 @@ streamlit run frontend/app.py
 **Future Improvements**
 
 1.Incorporate weather & holiday data for richer forecasts.
+
 2.Deploy a real-time API for serving predictions.
