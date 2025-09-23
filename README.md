@@ -6,27 +6,44 @@ This project forecasts hourly Citi Bike ride demand in New York City using histo
 **Features**
 
 1.Built an end-to-end ML pipeline for time-series forecasting.
+
 2.Created lag features & rolling statistics to capture demand trends.
+
 3.Trained multiple models (Baseline, Lag-28, Feature-Selected) using LightGBM.
+
 4.Logged experiments and metrics using MLflow.
+
 5.Automated workflows via GitHub Actions for CI/CD.
+
 6.Deployed predictions and features to Hopsworks Feature Store.
+
 7.Built an interactive Streamlit dashboard for visualization & monitoring.
 
 **Tech Stack**
 
 **Languages & Libraries:** Python, Pandas, NumPy, Scikit-learn, LightGBM, Matplotlib
+
 **ML Ops Tools:** MLflow, Hopsworks, GitHub Actions
+
 **Visualization:** Streamlit
+
 **Version Control:** GitHub
 
+
 **Repository Structure**
+
 ├── notebooks/           # Exploratory Data Analysis & experiments
+
 ├── pipelines/           # ML pipeline scripts
+
 ├── src/                 # Core source code
+
 ├── frontend/            # Streamlit app for visualization
+
 ├── test/                # Unit tests
+
 ├── requirements.txt     # Dependencies
+
 └── .github/workflows/   # CI/CD pipelines
 
 How to Run Locally
