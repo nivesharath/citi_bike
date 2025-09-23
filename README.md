@@ -3,6 +3,7 @@
 
 This project forecasts hourly Citi Bike ride demand in New York City using historical trip data. The goal is to help bike-sharing operators and city planners optimize bike availability and rebalancing strategies.
 
+
 **Features**
 
 1.Built an end-to-end ML pipeline for time-series forecasting.
@@ -19,6 +20,7 @@ This project forecasts hourly Citi Bike ride demand in New York City using histo
 
 7.Built an interactive Streamlit dashboard for visualization & monitoring.
 
+
 **Tech Stack**
 
 **Languages & Libraries:** Python, Pandas, NumPy, Scikit-learn, LightGBM, Matplotlib
@@ -33,7 +35,6 @@ This project forecasts hourly Citi Bike ride demand in New York City using histo
 **Repository Structure**
 
 ├── notebooks/           # Exploratory Data Analysis & experiments
-
 ├── pipelines/           # ML pipeline scripts
 
 ├── src/                 # Core source code
@@ -46,7 +47,8 @@ This project forecasts hourly Citi Bike ride demand in New York City using histo
 
 └── .github/workflows/   # CI/CD pipelines
 
-How to Run Locally
+
+**How to Run Locally**
 
 **Clone the repo:**
 
