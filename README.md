@@ -35,6 +35,7 @@ This project forecasts hourly Citi Bike ride demand in New York City using histo
 **Repository Structure**
 
 ├── notebooks/           # Exploratory Data Analysis & experiments
+
 ├── pipelines/           # ML pipeline scripts
 
 ├── src/                 # Core source code
