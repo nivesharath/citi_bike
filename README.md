@@ -34,6 +34,7 @@ How to Run Locally
 **Clone the repo:**
 
 git clone https://github.com/nivesharath/citi_bike.git
+
 cd citi_bike
 
 **Install dependencies:**
