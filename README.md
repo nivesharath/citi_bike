@@ -1,4 +1,5 @@
-**Citi Bike Trip Prediction System**
+# Citi Bike Trip Prediction System
+
 **Project Overview**
 
 This project forecasts hourly Citi Bike ride demand in New York City using historical trip data. The goal is to help bike-sharing operators and city planners optimize bike availability and rebalancing strategies.
