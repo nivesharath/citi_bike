@@ -35,20 +35,55 @@ This project forecasts hourly Citi Bike ride demand in New York City using histo
 
 **Repository Structure**
 
-├── notebooks/           # Exploratory Data Analysis & experiments
+├── .github/workflows/        # CI/CD pipelines (feature, training, inference)
 
-├── pipelines/           # ML pipeline scripts
+├── frontend/                 # Streamlit dashboards (monitoring & visualization)
 
-├── src/                 # Core source code
+│   ├── frontend_monitor.py
 
-├── frontend/            # Streamlit app for visualization
+│   ├── frontend_v1.py
 
-├── test/                # Unit tests
+│   ├── frontend_v2.py
 
-├── requirements.txt     # Dependencies
+├── notebooks/                # Jupyter notebooks for data prep, EDA, and modeling
 
-└── .github/workflows/   # CI/CD pipelines
+│   ├── 01_fetch_data.ipynb
 
+│   ├── ... (baseline, XGBoost, LightGBM, hyperparameter tuning, retraining, etc.)
+
+│   └── latest_prediction.csv
+
+├── pipelines/                # ML pipelines (training & inference)
+
+│   ├── model_training_pipeline.py
+
+│   └── inference_pipeline.py
+
+├── src/                      # Core source code & utilities
+
+│   ├── config.py
+
+│   ├── data_utils.py
+
+│   ├── feature_pipeline.py
+
+│   ├── inference.py
+
+│   └── plot_utils.py
+
+├── test/                     # Testing scripts
+
+│   └── sample_app.py
+
+├── requirements.txt          # Dependencies
+
+├── requirements_feature_pipeline.txt
+
+├── requirements_with_version.txt
+
+├── todo.md                   # Pending tasks
+
+└── vscode_config.json
 
 **How to Run Locally**
 
@@ -64,11 +99,11 @@ pip install -r requirements.txt
 
 **Run the pipeline:**
 
-python src/run_pipeline.py
+python src/feature_pipeline.py
 
 **Launch Streamlit dashboard:**
 
-streamlit run frontend/app.py
+streamlit run frontend/frontend_v2.py
 
 **Results**
 
